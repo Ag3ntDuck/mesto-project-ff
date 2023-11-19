@@ -1,59 +1,36 @@
-// @todo: Темплейт карточки
+// @todo: Темплейт карточки +
 
-// @todo: DOM узлы
+// @todo: DOM узлы +
 
-// @todo: Функция создания карточки
+// @todo: Функция создания карточки +
 
-// @todo: Функция удаления карточки
+// @todo: Функция удаления карточки +
 
-// @todo: Вывести карточки на страницу
+// @todo: Вывести карточки на страницу +
 
+const cardTemplate = document.querySelector("#card-template").content;
+const placesList = document.querySelector(".places__list");
+const clickButton = document.querySelector(".profile__add-button");
 
-const userTemplate = document.querySelector('#card-template').content;
-const usersOnline = document.querySelector('.places__list');
-const clickButton = document.querySelector('.profile__add-button');
+const addCard = function (title, imageUrl, deletebuttonCallback) {
+  const cardElement = cardTemplate.cloneNode(true).children[0];
+  const image = cardElement.querySelector(".card__image");
+  image.src = imageUrl;
+  image.alt = title;
+  const titleElement = cardElement.querySelector(".card__title");
+  titleElement.innerText = title;
+  const deleteButton = cardElement.querySelector(".card__delete-button");
+  deleteButton.addEventListener("click", deletebuttonCallback);
+  placesList.appendChild(cardElement);
+};
 
-
-
-
-/*clickButton.addEventListener('click', function (event) {
-    console.log(123);
-    const userElement = document.querySelector('#card-template').content;
-    const usersOnline = document.querySelector('.card');
-    return usersOnline.append(usersOnline);
-
-}); */
-
-
-
-
-const addCard = function (title, imageUrl) {
-    const userElement = userTemplate.cloneNode(true).querySelector('div');
-    const image = userElement.querySelector('.card__image');
-   image.src = imageUrl;
-    const titleElement = userElement.querySelector('.card__title');
-    titleElement.innerText = title;
-    const deleteButton = userElement.querySelector('.card__delete-button');
-    deleteButton.addEventListener('click', function(event) {
-        userElement.remove();
-    });
-   usersOnline.appendChild(userElement);
-   
-
-}
-
+const deleteButton = function (event) {
+  const cardElement = event.target.parentElement;
+  cardElement.remove();
+};
 
 initialCards.forEach(function (card) {
-   return addCard(card.name, card.link);
-    
-}); 
+  return addCard(card.name, card.link, deleteButton);
+});
 
-clickButton.addEventListener('click', addCard);
 
-const deleteButton = function() {
-    const userElement = userTemplate.cloneNode(true);
-    const deleteButton = document.querySelector('.card__delete-button');
-    const deleteCard = deleteButton.closest('.card');
-    deleteCard.remove();
-};
-    
