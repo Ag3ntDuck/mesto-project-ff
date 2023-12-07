@@ -19,3 +19,15 @@ export function createCard(
   image.addEventListener("click", zoomImageCallback);
   return cardElement;
 }
+
+//лайк
+export function likeClickCallback(evt) {
+  const target = evt.target;
+  target.classList.toggle("card__like-button_is-active");
+}
+
+//удаление карточке по кнопке
+export function deleteCardCallback(evt) {
+  const cardElement = evt.target.parentElement;
+  cardElement.remove();
+}
