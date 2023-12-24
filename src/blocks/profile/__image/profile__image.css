@@ -7,6 +7,7 @@
   background-size: cover;
   background-position: center;
   margin: 0 29px 0 0;
+  
 }
 
 @media screen and (max-width: 740px) {
@@ -20,3 +21,19 @@
     margin-right: 0;
   }
 }
+
+.profile_edit {
+  display: flex;
+  justify-content: center;
+  min-height: 100%;
+  align-items: center;
+  opacity: 0%;
+  transition: opacity 0.1s;
+  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.profile_edit:hover {
+  opacity: 100%;
+}
+

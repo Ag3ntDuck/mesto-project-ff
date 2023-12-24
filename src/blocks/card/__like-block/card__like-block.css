@@ -1,0 +1,10 @@
+.card__like-block {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.card__like-count {
+    text-align: center;
+}
+

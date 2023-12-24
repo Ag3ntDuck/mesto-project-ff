@@ -3,7 +3,7 @@ export function closeOnEscape(e) {
   if (e.key !== "Escape") {
     return;
   }
-  closePopup(document.querySelector(".popup_is-opened"));
+  closeModal(document.querySelector(".popup_is-opened"));
 }
 
 function closeOnOverlayClick(evt) {
