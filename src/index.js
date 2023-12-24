@@ -1,10 +1,7 @@
 import "./pages/index.css";
 
 import { initialCards } from "./initialCards";
-import {
-  createCard,
-  clientDeleteCard,
-} from "./components/card";
+import { createCard, clientDeleteCard } from "./components/card";
 import { openModal, closeModal } from "./components/modal";
 
 const cardTemplate = document.querySelector("#card-template").content;
@@ -53,27 +50,26 @@ const getProfileId = (id) => {
   return profileInfoBlock.dataset.id;
 };
 
-//открытие по кнопке 
+//открытие по кнопке
 //сюда
 
 const getProfile = (config, profileCallback) => {
   fetch(`https://nomoreparties.co/v1/${config.cohort}/users/me`, {
     headers: {
-      authorization: config.authorizationHeader
-    }
+      authorization: config.authorizationHeader,
+    },
   })
-  .then(r => r.json())
-  .then(r => profileCallback(r));
+    .then((r) => r.json())
+    .then((r) => profileCallback(r));
 };
 
 const deleteCard = (config, id, deleteCallback) => {
   fetch(`https://nomoreparties.co/v1/${config.cohort}/cards/${id}`, {
-    method: 'DELETE',
+    method: "DELETE",
     headers: {
-      authorization: config.authorizationHeader
-    }
-  })
-    .then(() => deleteCallback());
+      authorization: config.authorizationHeader,
+    },
+  }).then(() => deleteCallback());
 };
 
 function deleteCardCallback(evt) {
@@ -86,24 +82,24 @@ function deleteCardCallback(evt) {
 
 const deleteCardLike = (config, id, deleteCallback) => {
   fetch(`https://nomoreparties.co/v1/${config.cohort}/cards/likes/${id}`, {
-    method: 'DELETE',
+    method: "DELETE",
     headers: {
-      authorization: config.authorizationHeader
-    }
+      authorization: config.authorizationHeader,
+    },
   })
-    .then(r => r.json())
-    .then(r => deleteCallback(r));
+    .then((r) => r.json())
+    .then((r) => deleteCallback(r));
 };
 
 const putCardLike = (config, id, putCallback) => {
   fetch(`https://nomoreparties.co/v1/${config.cohort}/cards/likes/${id}`, {
-    method: 'PUT',
+    method: "PUT",
     headers: {
-      authorization: config.authorizationHeader
-    }
+      authorization: config.authorizationHeader,
+    },
   })
-    .then(r => r.json())
-    .then(r => putCallback(r));
+    .then((r) => r.json())
+    .then((r) => putCallback(r));
 };
 
 function likeClickCallback(evt) {
@@ -113,12 +109,14 @@ function likeClickCallback(evt) {
   if (target.classList.contains("card__like-button_is-active")) {
     deleteCardLike(apiConfig, id, (card) => {
       target.classList.remove("card__like-button_is-active");
-      cardElement.querySelector('.card__like-count').textContent = card.likes.length;
+      cardElement.querySelector(".card__like-count").textContent =
+        card.likes.length;
     });
   } else {
     putCardLike(apiConfig, id, (card) => {
       target.classList.add("card__like-button_is-active");
-      cardElement.querySelector('.card__like-count').textContent = card.likes.length;
+      cardElement.querySelector(".card__like-count").textContent =
+        card.likes.length;
     });
   }
 }
@@ -175,7 +173,7 @@ popupAddCardForm.addEventListener("submit", (evt) => {
         card.name,
         card.link,
         card.likes.length,
-        !!card.likes.find(like => like._id === getProfileId()),
+        !!card.likes.find((like) => like._id === getProfileId()),
         deleteCardCallback,
         likeClickCallback,
         zoomImage
@@ -195,24 +193,23 @@ popupEditForm.addEventListener("submit", (evt) => {
     profileDescription.textContent = profile.about;
     profileImage.src = profile.avatar;
     closeModal(popupEditProfile);
-  });0
+  });
+  0;
 });
 
-
-
 const apiConfig = {
-  authorizationHeader: '19f866a5-5150-48f0-9090-e0700a6bf9a7',
-  cohort: 'wff-cohort-3'
+  authorizationHeader: "19f866a5-5150-48f0-9090-e0700a6bf9a7",
+  cohort: "wff-cohort-3",
 };
 
 const getCards = (config, cardsCallback) => {
   fetch(`https://nomoreparties.co/v1/${config.cohort}/cards`, {
     headers: {
-      authorization: config.authorizationHeader
-    }
+      authorization: config.authorizationHeader,
+    },
   })
-    .then(r => r.json())
-    .then(r => cardsCallback(r));
+    .then((r) => r.json())
+    .then((r) => cardsCallback(r));
 };
 
 getProfile(apiConfig, (profile) => {
@@ -230,7 +227,7 @@ getProfile(apiConfig, (profile) => {
           card.name,
           card.link,
           card.likes.length,
-          !!card.likes.find(like => like._id === getProfileId()),
+          !!card.likes.find((like) => like._id === getProfileId()),
           getProfileId() === card.owner._id ? deleteCardCallback : undefined,
           likeClickCallback,
           zoomImage
@@ -242,34 +239,34 @@ getProfile(apiConfig, (profile) => {
 
 const patchProfile = (config, name, about, patchCallback) => {
   fetch(`https://nomoreparties.co/v1/${config.cohort}/users/me`, {
-    method: 'PATCH',
+    method: "PATCH",
     headers: {
       authorization: config.authorizationHeader,
-      'content-type': 'application/json'
+      "content-type": "application/json",
     },
     body: JSON.stringify({
       name: name,
-      about: about
-    })
+      about: about,
+    }),
   })
-    .then(r => r.json())
-    .then(r => patchCallback(r));
+    .then((r) => r.json())
+    .then((r) => patchCallback(r));
 };
 
 const postCard = (config, name, link, postCallbacK) => {
   fetch(`https://nomoreparties.co/v1/${config.cohort}/cards`, {
-    method: 'POST',
+    method: "POST",
     headers: {
       authorization: config.authorizationHeader,
-      'content-type': 'application/json'
+      "content-type": "application/json",
     },
     body: JSON.stringify({
       name: name,
-      link: link
-    })
+      link: link,
+    }),
   })
-  .then(r => r.json())
-  .then(r => postCallbacK(r));
+    .then((r) => r.json())
+    .then((r) => postCallbacK(r));
 };
 
 /* to do:
@@ -279,12 +276,12 @@ const postCard = (config, name, link, postCallbacK) => {
 */
 
 const validationConfig = {
-  formSelector: '.popup__form',
-  inputSelector: '.popup__input',
-  submitButtonSelector: '.popup__button',
-  inputErrorClass: 'popup__input_type_error',
-  errorClass: 'popup__error_visible'
-}
+  formSelector: ".popup__form",
+  inputSelector: ".popup__input",
+  submitButtonSelector: ".popup__button",
+  inputErrorClass: "popup__input_type_error",
+  errorClass: "popup__error_visible",
+};
 
 const clearValidation = (config, form) => {
   disableButton(config, form);
@@ -293,15 +290,14 @@ const clearValidation = (config, form) => {
     input.value = "";
     hideInputError(config, form, input);
   });
-}
+};
 
 const hideInputError = (config, form, input) => {
   const errorElement = form.querySelector(`.${input.id}-error`);
   input.classList.remove(config.inputErrorClass);
   errorElement.classList.remove(config.errorClass);
-  errorElement.textContent = '';
+  errorElement.textContent = "";
 };
-
 
 const showInputError = (config, form, input, errorMessage) => {
   const errorElement = form.querySelector(`.${input.id}-error`);
@@ -313,12 +309,12 @@ const showInputError = (config, form, input, errorMessage) => {
 const disableButton = (config, form) => {
   const button = form.querySelector(config.submitButtonSelector);
   button.setAttribute("disabled", "");
-}
+};
 
 const enableButton = (config, form) => {
   const button = form.querySelector(config.submitButtonSelector);
   button.removeAttribute("disabled", "");
-}
+};
 
 const popupInputValidity = (config, form, input) => {
   if (input.validity.patternMismatch) {
@@ -349,7 +345,7 @@ const popupInputValidity = (config, form, input) => {
 const popupEventListener = (config, form) => {
   const inputList = Array.from(form.querySelectorAll(config.inputSelector));
   inputList.forEach((input) => {
-    input.addEventListener('input', () => {
+    input.addEventListener("input", () => {
       popupInputValidity(config, form, input);
     });
   });
@@ -366,17 +362,14 @@ ennableValidation(validationConfig);
 
 
 
-//api
-
-fetch('https://nomoreparties.co/v1/wff-cohort-3/users/me', {
+fetch("https://nomoreparties.co/v1/wff-cohort-3/users/me", {
   headers: {
-    authorization: '19f866a5-5150-48f0-9090-e0700a6bf9a7'
-  }
+    authorization: "19f866a5-5150-48f0-9090-e0700a6bf9a7",
+  },
 })
-  .then(res => res.json())
+  .then((res) => res.json())
   .then((result) => {
     console.log(result);
   });
-  
-//аватарка
+
 
