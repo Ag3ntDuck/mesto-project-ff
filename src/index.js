@@ -1,8 +1,32 @@
 import "./pages/index.css";
 
-import { initialCards } from "./initialCards";
 import { createCard, clientDeleteCard } from "./components/card";
 import { openModal, closeModal } from "./components/modal";
+import {
+  putCardLike,
+  getProfile,
+  deleteCard,
+  deleteCardLike,
+  getCards,
+  patchProfile,
+  postCard,
+  patchAvatar,
+} from "./components/api";
+import { ennableValidation, clearValidation, enableButton } from "./components/validation";
+
+const validationConfig = {
+  formSelector: ".popup__form",
+  inputSelector: ".popup__input",
+  submitButtonSelector: ".popup__button",
+  inputErrorClass: "popup__input_type_error",
+  errorClass: "popup__error_visible",
+};
+
+const apiConfig = {
+  authorizationHeader: "19f866a5-5150-48f0-9090-e0700a6bf9a7",
+  cohort: "wff-cohort-3",
+  baseUrl: "https://nomoreparties.co/v1"
+};
 
 const cardTemplate = document.querySelector("#card-template").content;
 const placesList = document.querySelector(".places__list");
@@ -11,6 +35,14 @@ const imagePopup = document.querySelector(".popup_type_image");
 const imagePopupClose = imagePopup.querySelector(".popup__close");
 const imagePopupImage = imagePopup.querySelector(".popup__image");
 const imagePopupCaption = imagePopup.querySelector(".popup__caption");
+
+const setLoading = (button) => {
+  button.innerText = "Сохранение...";
+};
+
+const setNotLoading = (button) => {
+  button.innerText = "Сохранить";
+};
 
 //закрытие попапа картинки по кнопке
 imagePopupClose.addEventListener("click", () => {
@@ -53,25 +85,6 @@ const getProfileId = (id) => {
 //открытие по кнопке
 //сюда
 
-const getProfile = (config, profileCallback) => {
-  fetch(`https://nomoreparties.co/v1/${config.cohort}/users/me`, {
-    headers: {
-      authorization: config.authorizationHeader,
-    },
-  })
-    .then((r) => r.json())
-    .then((r) => profileCallback(r));
-};
-
-const deleteCard = (config, id, deleteCallback) => {
-  fetch(`https://nomoreparties.co/v1/${config.cohort}/cards/${id}`, {
-    method: "DELETE",
-    headers: {
-      authorization: config.authorizationHeader,
-    },
-  }).then(() => deleteCallback());
-};
-
 function deleteCardCallback(evt) {
   const cardElement = evt.target.parentElement;
   const id = cardElement.dataset.id;
@@ -79,28 +92,6 @@ function deleteCardCallback(evt) {
     clientDeleteCard(evt);
   });
 }
-
-const deleteCardLike = (config, id, deleteCallback) => {
-  fetch(`https://nomoreparties.co/v1/${config.cohort}/cards/likes/${id}`, {
-    method: "DELETE",
-    headers: {
-      authorization: config.authorizationHeader,
-    },
-  })
-    .then((r) => r.json())
-    .then((r) => deleteCallback(r));
-};
-
-const putCardLike = (config, id, putCallback) => {
-  fetch(`https://nomoreparties.co/v1/${config.cohort}/cards/likes/${id}`, {
-    method: "PUT",
-    headers: {
-      authorization: config.authorizationHeader,
-    },
-  })
-    .then((r) => r.json())
-    .then((r) => putCallback(r));
-};
 
 function likeClickCallback(evt) {
   const cardElement = evt.target.parentElement.parentElement.parentElement;
@@ -125,6 +116,7 @@ const profileEdit = document.querySelector(".profile__edit-button");
 
 profileEdit.addEventListener("click", () => {
   clearValidation(validationConfig, popupEditProfile);
+  setNotLoading(popupEditProfile.querySelector(validationConfig.submitButtonSelector));
   enableButton(validationConfig, popupEditProfile);
   profileTitleInput.value = profileTitle.textContent;
   profileDescriptionInput.value = profileDescription.textContent;
@@ -150,6 +142,7 @@ const popupAddCardUrlInput = popupAddCard.querySelector(
 //открытие по кнопке
 popupAddCardButton.addEventListener("click", () => {
   clearValidation(validationConfig, popupAddCard);
+  setNotLoading(popupAddCard.querySelector(validationConfig.submitButtonSelector));
   openModal(popupAddCard);
 });
 
@@ -163,6 +156,7 @@ popupAddCardClose.addEventListener("click", () => {
 popupAddCardForm.addEventListener("submit", (evt) => {
   evt.preventDefault();
   closeModal(popupAddCard);
+  setLoading(popupAddCard.querySelector(".popup__button"));
   const name = popupAddCardNameInput.value;
   const url = popupAddCardUrlInput.value;
   postCard(apiConfig, name, url, (card) => {
@@ -188,34 +182,20 @@ popupEditForm.addEventListener("submit", (evt) => {
   evt.preventDefault();
   const newName = profileTitleInput.value;
   const newAbout = profileDescriptionInput.value;
+  setLoading(popupEditForm.querySelector(".popup__button"));
   patchProfile(apiConfig, newName, newAbout, (profile) => {
     profileTitle.textContent = profile.name;
     profileDescription.textContent = profile.about;
-    profileImage.src = profile.avatar;
+    profileImage.style.backgroundImage = `url(${profile.avatar})`;
     closeModal(popupEditProfile);
   });
   0;
 });
 
-const apiConfig = {
-  authorizationHeader: "19f866a5-5150-48f0-9090-e0700a6bf9a7",
-  cohort: "wff-cohort-3",
-};
-
-const getCards = (config, cardsCallback) => {
-  fetch(`https://nomoreparties.co/v1/${config.cohort}/cards`, {
-    headers: {
-      authorization: config.authorizationHeader,
-    },
-  })
-    .then((r) => r.json())
-    .then((r) => cardsCallback(r));
-};
-
 getProfile(apiConfig, (profile) => {
   profileTitle.textContent = profile.name;
   profileDescription.textContent = profile.about;
-  profileImage.src = profile.avatar;
+  profileImage.style.backgroundImage = `url(${profile.avatar})`;
   setProfileId(profile._id);
 
   getCards(apiConfig, (cards) => {
@@ -237,139 +217,36 @@ getProfile(apiConfig, (profile) => {
   });
 });
 
-const patchProfile = (config, name, about, patchCallback) => {
-  fetch(`https://nomoreparties.co/v1/${config.cohort}/users/me`, {
-    method: "PATCH",
-    headers: {
-      authorization: config.authorizationHeader,
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      name: name,
-      about: about,
-    }),
-  })
-    .then((r) => r.json())
-    .then((r) => patchCallback(r));
-};
-
-const postCard = (config, name, link, postCallbacK) => {
-  fetch(`https://nomoreparties.co/v1/${config.cohort}/cards`, {
-    method: "POST",
-    headers: {
-      authorization: config.authorizationHeader,
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      name: name,
-      link: link,
-    }),
-  })
-    .then((r) => r.json())
-    .then((r) => postCallbacK(r));
-};
-
-/* to do:
-Валидация формы «Редактировать профиль»:
-  
-
-*/
-
-const validationConfig = {
-  formSelector: ".popup__form",
-  inputSelector: ".popup__input",
-  submitButtonSelector: ".popup__button",
-  inputErrorClass: "popup__input_type_error",
-  errorClass: "popup__error_visible",
-};
-
-const clearValidation = (config, form) => {
-  disableButton(config, form);
-  const inputList = Array.from(form.querySelectorAll(config.inputSelector));
-  inputList.forEach((input) => {
-    input.value = "";
-    hideInputError(config, form, input);
-  });
-};
-
-const hideInputError = (config, form, input) => {
-  const errorElement = form.querySelector(`.${input.id}-error`);
-  input.classList.remove(config.inputErrorClass);
-  errorElement.classList.remove(config.errorClass);
-  errorElement.textContent = "";
-};
-
-const showInputError = (config, form, input, errorMessage) => {
-  const errorElement = form.querySelector(`.${input.id}-error`);
-  input.classList.add(config.inputErrorClass);
-  errorElement.textContent = errorMessage;
-  errorElement.classList.add(config.errorClass);
-};
-
-const disableButton = (config, form) => {
-  const button = form.querySelector(config.submitButtonSelector);
-  button.setAttribute("disabled", "");
-};
-
-const enableButton = (config, form) => {
-  const button = form.querySelector(config.submitButtonSelector);
-  button.removeAttribute("disabled", "");
-};
-
-const popupInputValidity = (config, form, input) => {
-  if (input.validity.patternMismatch) {
-    input.setCustomValidity(input.dataset.errorMessage);
-  } else {
-    input.setCustomValidity("");
-  }
-  if (!input.validity.valid) {
-    showInputError(config, form, input, input.validationMessage);
-    disableButton(config, form);
-  } else {
-    hideInputError(config, form, input);
-    const inputList = Array.from(form.querySelectorAll(config.inputSelector));
-    let allValid = true;
-    for (const input of inputList) {
-      if (!input.validity.valid) {
-        allValid = false;
-      }
-    }
-    if (allValid) {
-      enableButton(config, form);
-    } else {
-      disableButton(config, form);
-    }
-  }
-};
-
-const popupEventListener = (config, form) => {
-  const inputList = Array.from(form.querySelectorAll(config.inputSelector));
-  inputList.forEach((input) => {
-    input.addEventListener("input", () => {
-      popupInputValidity(config, form, input);
-    });
-  });
-};
-
-const ennableValidation = (config) => {
-  const formList = Array.from(document.querySelectorAll(config.formSelector));
-  formList.forEach((form) => {
-    popupEventListener(config, form);
-  });
-};
-
 ennableValidation(validationConfig);
 
+const popupEditProfileAvatar = document.querySelector(
+  ".popup_type_edit_avatar"
+);
+const profileAvatarEdit = document.querySelector(".profile_edit");
+const avatarTitleInput = popupEditProfileAvatar.querySelector(
+  ".popup__input_type_avatar"
+);
 
+profileAvatarEdit.addEventListener("click", () => {
+  clearValidation(validationConfig, popupEditProfileAvatar);
+  setNotLoading(popupEditProfileAvatar.querySelector(validationConfig.submitButtonSelector));
+  openModal(popupEditProfileAvatar);
+});
 
-fetch("https://nomoreparties.co/v1/wff-cohort-3/users/me", {
-  headers: {
-    authorization: "19f866a5-5150-48f0-9090-e0700a6bf9a7",
-  },
-})
-  .then((res) => res.json())
-  .then((result) => {
-    console.log(result);
+const avatarClose = popupEditProfileAvatar.querySelector(".popup__close");
+avatarClose.addEventListener("click", () => {
+  closeModal(popupEditProfileAvatar);
+});
+
+const popupEditFormAvatar =
+  popupEditProfileAvatar.querySelector(".popup__form");
+
+popupEditFormAvatar.addEventListener("submit", (evt) => {
+  evt.preventDefault();
+  const avatar = avatarTitleInput.value;
+  setLoading(popupEditFormAvatar.querySelector(".popup__button"));
+  patchAvatar(apiConfig, avatar, (profile) => {
+    profileImage.style.backgroundImage = `url(${profile.avatar})`;
+    closeModal(popupEditProfileAvatar);
   });
-
-
+});
