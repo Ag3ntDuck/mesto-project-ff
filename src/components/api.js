@@ -1,88 +1,55 @@
-export const putCardLike = (config, id, putCallback) => {
-  fetch(`${config.baseUrl}/${config.cohort}/cards/likes/${id}`, {
+export const putCardLike = (config, id) => {
+  return fetch(`${config.baseUrl}/${config.cohort}/cards/likes/${id}`, {
     method: "PUT",
     headers: {
       authorization: config.authorizationHeader,
     },
-  })
-    .then((r) => {
-      if (r.ok) {
-        return r.json();
-      }
-      return Promise.reject(`Ошибка: ${r.status}`);
-    })
-    .then((r) => putCallback(r))
-    .catch((err) => {
-      console.log(err);
-    });
+  }).then(verifyResponse);
 };
 
-export const getProfile = (config, profileCallback) => {
-  fetch(`${config.baseUrl}/${config.cohort}/users/me`, {
+const verifyResponse = (r) => {
+  if (r.ok) {
+    return r.json();
+  }
+  return Promise.reject(`Ошибка: ${r.status}`);
+};
+
+export const getProfile = (config) => {
+  return fetch(`${config.baseUrl}/${config.cohort}/users/me`, {
     headers: {
       authorization: config.authorizationHeader,
     },
-  })
-    .then((r) => {
-      if (r.ok) {
-        return r.json();
-      }
-      return Promise.reject(`Ошибка: ${r.status}`);
-    })
-    .then((r) => profileCallback(r))
-    .catch((err) => {
-      console.log(err);
-    });
+  }).then(verifyResponse);
 };
 
-export const deleteCard = (config, id, deleteCallback) => {
-  fetch(`${config.baseUrl}/${config.cohort}/cards/${id}`, {
+export const deleteCard = (config, id) => {
+  return fetch(`${config.baseUrl}/${config.cohort}/cards/${id}`, {
     method: "DELETE",
     headers: {
       authorization: config.authorizationHeader,
     },
-  }).then(() => deleteCallback());
+  }).then(verifyResponse);
 };
 
-export const deleteCardLike = (config, id, deleteCallback) => {
-  fetch(`${config.baseUrl}/${config.cohort}/cards/likes/${id}`, {
+export const deleteCardLike = (config, id) => {
+  return fetch(`${config.baseUrl}/${config.cohort}/cards/likes/${id}`, {
     method: "DELETE",
     headers: {
       authorization: config.authorizationHeader,
     },
-  })
-    .then((r) => {
-      if (r.ok) {
-        return r.json();
-      }
-      return Promise.reject(`Ошибка: ${r.status}`);
-    })
-    .then((r) => deleteCallback(r))
-    .catch((err) => {
-      console.log(err);
-    });
+  }).then(verifyResponse);
 };
 
-export const getCards = (config, cardsCallback) => {
-  fetch(`${config.baseUrl}/${config.cohort}/cards`, {
+export const getCards = (config) => {
+  return fetch(`${config.baseUrl}/${config.cohort}/cards`, {
     headers: {
       authorization: config.authorizationHeader,
     },
-  })
-    .then((r) => {
-      if (r.ok) {
-        return r.json();
-      }
-      return Promise.reject(`Ошибка: ${r.status}`);
-    })
-    .then((r) => cardsCallback(r))
-    .catch((err) => {
-      console.log(err);
-    });
+  }).then(verifyResponse);
 };
 
-export const patchProfile = (config, name, about, patchCallback) => {
-  fetch(`${config.baseUrl}/${config.cohort}/users/me`, {
+export const patchProfile = (config, name, about) => {
+  return fetch(`${config.baseUrl}/${config.cohort}/users/me`, {
     method: "PATCH",
     headers: {
       authorization: config.authorizationHeader,
@@ -92,21 +59,11 @@ export const patchProfile = (config, name, about, patchCallback) => {
       name: name,
       about: about,
     }),
-  })
-    .then((r) => {
-      if (r.ok) {
-        return r.json();
-      }
-      return Promise.reject(`Ошибка: ${r.status}`);
-    })
-    .then((r) => patchCallback(r))
-    .catch((err) => {
-      console.log(err);
-    });
+  }).then(verifyResponse);
 };
 
-export const postCard = (config, name, link, postCallbacK) => {
-  fetch(`${config.baseUrl}/${config.cohort}/cards`, {
+export const postCard = (config, name, link) => {
+  return fetch(`${config.baseUrl}/${config.cohort}/cards`, {
     method: "POST",
     headers: {
       authorization: config.authorizationHeader,
@@ -116,21 +73,11 @@ export const postCard = (config, name, link, postCallbacK) => {
       name: name,
       link: link,
     }),
-  })
-    .then((r) => {
-      if (r.ok) {
-        return r.json();
-      }
-      return Promise.reject(`Ошибка: ${r.status}`);
-    })
-    .then((r) => postCallbacK(r))
-    .catch((err) => {
-      console.log(err);
-    });
+  }).then(verifyResponse);
 };
 
-export const patchAvatar = (config, avatar, patchCallback) => {
-  fetch(`${config.baseUrl}/${config.cohort}/users/me/avatar`, {
+export const patchAvatar = (config, avatar) => {
+  return fetch(`${config.baseUrl}/${config.cohort}/users/me/avatar`, {
     method: "PATCH",
     headers: {
       authorization: config.authorizationHeader,
@@ -139,15 +86,5 @@ export const patchAvatar = (config, avatar, patchCallback) => {
     body: JSON.stringify({
       avatar: avatar,
     }),
-  })
-    .then((r) => {
-      if (r.ok) {
-        return r.json();
-      }
-      return Promise.reject(`Ошибка: ${r.status}`);
-    })
-    .then((r) => patchCallback(r))
-    .catch((err) => {
-      console.log(err);
-    });
+  }).then(verifyResponse);
 };
